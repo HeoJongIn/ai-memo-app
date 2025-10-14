@@ -10,12 +10,14 @@ import Link from "next/link"
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase'
 import LogoutDialog from '@/components/auth/logout-dialog'
+import OnboardingPopup from '@/components/onboarding/onboarding-popup'
 import type { User } from '@supabase/supabase-js'
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
+  const [onboardingPopupOpen, setOnboardingPopupOpen] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -103,7 +105,11 @@ export default function Home() {
       
       <div className="relative z-10 container mx-auto px-4 py-16">
         <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-emerald-400 via-violet-500 to-cyan-400 bg-clip-text text-transparent mb-6 animate-pulse">
+          <h1 
+            className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-emerald-400 via-violet-500 to-cyan-400 bg-clip-text text-transparent mb-6 animate-pulse cursor-pointer hover:scale-105 transition-transform"
+            onClick={() => setOnboardingPopupOpen(true)}
+            title="온보딩 보기"
+          >
             AI 메모장
           </h1>
           <p className="text-xl text-gray-700 mb-12 max-w-2xl mx-auto font-medium">
@@ -168,6 +174,11 @@ export default function Home() {
       <LogoutDialog 
         open={logoutDialogOpen} 
         onOpenChange={setLogoutDialogOpen} 
+      />
+      
+      <OnboardingPopup 
+        open={onboardingPopupOpen} 
+        onOpenChange={setOnboardingPopupOpen} 
       />
     </div>
   )
