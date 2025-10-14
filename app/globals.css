@@ -120,3 +120,115 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* 오로라 애니메이션 */
+@keyframes aurora-1 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translate(20px, -30px) rotate(90deg) scale(1.1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-10px, 20px) rotate(180deg) scale(0.9);
+    opacity: 0.3;
+  }
+  75% {
+    transform: translate(30px, 10px) rotate(270deg) scale(1.05);
+    opacity: 0.5;
+  }
+}
+
+@keyframes aurora-2 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 0.35;
+  }
+  33% {
+    transform: translate(-25px, 15px) rotate(120deg) scale(1.2);
+    opacity: 0.5;
+  }
+  66% {
+    transform: translate(15px, -20px) rotate(240deg) scale(0.8);
+    opacity: 0.25;
+  }
+}
+
+@keyframes aurora-3 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 0.3;
+  }
+  40% {
+    transform: translate(30px, -25px) rotate(144deg) scale(1.15);
+    opacity: 0.45;
+  }
+  80% {
+    transform: translate(-20px, 30px) rotate(288deg) scale(0.85);
+    opacity: 0.2;
+  }
+}
+
+@keyframes aurora-4 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate(-15px, -35px) rotate(180deg) scale(1.3);
+    opacity: 0.4;
+  }
+}
+
+@keyframes aurora-beam {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateY(-100%);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(100%);
+  }
+}
+
+@keyframes aurora-beam-delayed {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translateY(-100%);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(100%);
+  }
+}
+
+.animate-aurora-1 {
+  animation: aurora-1 20s ease-in-out infinite;
+}
+
+.animate-aurora-2 {
+  animation: aurora-2 25s ease-in-out infinite;
+}
+
+.animate-aurora-3 {
+  animation: aurora-3 30s ease-in-out infinite;
+}
+
+.animate-aurora-4 {
+  animation: aurora-4 35s ease-in-out infinite;
+}
+
+.animate-aurora-beam {
+  animation: aurora-beam 8s ease-in-out infinite;
+}
+
+.animate-aurora-beam-delayed {
+  animation: aurora-beam-delayed 8s ease-in-out infinite 2s;
+}
+
+/* 그라데이션 유틸리티 */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
+}

@@ -1,11 +1,11 @@
-// app/auth/signup/page.tsx
-// 회원가입 페이지 컴포넌트
-// 사용자가 이메일과 비밀번호로 계정을 생성할 수 있는 페이지
-// 관련 파일: components/auth/signup-form.tsx, lib/supabase.ts
+// app/auth/login/page.tsx
+// 로그인 페이지 컴포넌트
+// 사용자가 이메일과 비밀번호로 로그인할 수 있는 페이지
+// 관련 파일: components/auth/login-form.tsx, lib/supabase.ts
 
-import SignupForm from '@/components/auth/signup-form'
+import LoginForm from '@/components/auth/login-form'
 
-export default function SignupPage() {
+export default function LoginPage() {
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* 오로라 배경 */}
@@ -22,13 +22,13 @@ export default function SignupPage() {
       <div className="relative z-10 max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold bg-gradient-to-r from-emerald-400 via-violet-500 to-cyan-400 bg-clip-text text-transparent">
-            AI 메모장 회원가입
+            AI 메모장 로그인
           </h2>
           <p className="mt-2 text-center text-sm text-gray-700">
-            이메일과 비밀번호로 계정을 생성하세요
+            이메일과 비밀번호로 로그인하세요
           </p>
         </div>
-        <SignupForm />
+        <LoginForm />
       </div>
     </div>
   )

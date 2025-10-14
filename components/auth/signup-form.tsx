@@ -122,10 +122,10 @@ export default function SignupForm() {
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-white/80 backdrop-blur-sm border-purple-200 shadow-lg">
       <CardHeader>
-        <CardTitle>회원가입</CardTitle>
-        <CardDescription>
+        <CardTitle className="bg-gradient-to-r from-emerald-500 via-violet-500 to-cyan-500 bg-clip-text text-transparent">회원가입</CardTitle>
+        <CardDescription className="text-gray-700">
           AI 메모장 서비스를 이용하기 위해 계정을 생성하세요
         </CardDescription>
       </CardHeader>
@@ -190,7 +190,7 @@ export default function SignupForm() {
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full bg-gradient-to-r from-emerald-500 to-violet-600 hover:from-emerald-600 hover:to-violet-700 text-white border-0 shadow-lg"
             disabled={isLoading}
             aria-describedby="submit-description"
           >
