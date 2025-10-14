@@ -13,10 +13,13 @@ export default function SignupPage() {
       <div className="absolute inset-0 bg-gradient-to-tr from-violet-500 via-purple-600 to-fuchsia-700 opacity-20"></div>
       <div className="absolute inset-0 bg-gradient-to-bl from-rose-400 via-pink-500 to-red-600 opacity-18"></div>
       
-      {/* 오로라 애니메이션 */}
-      <div className="absolute top-0 left-0 w-full h-full">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-radial from-emerald-400 via-teal-500 to-transparent rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-aurora-1"></div>
-        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-gradient-radial from-violet-500 via-purple-600 to-transparent rounded-full mix-blend-screen filter blur-3xl opacity-35 animate-aurora-2"></div>
+      {/* 움직이는 오로라 효과 - 역동적이고 생동감 있는 움직임 */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-[200px] h-[120vh] bg-gradient-to-b from-emerald-400/60 via-teal-500/50 to-transparent animate-aurora-dance-1 filter blur-xl"></div>
+        <div className="absolute top-0 left-1/2 w-[250px] h-[120vh] bg-gradient-to-b from-violet-500/55 via-purple-600/45 to-transparent animate-aurora-dance-2 filter blur-xl" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-0 right-1/4 w-[200px] h-[120vh] bg-gradient-to-b from-blue-400/50 via-indigo-500/40 to-transparent animate-aurora-dance-3 filter blur-xl" style={{animationDelay: '4s'}}></div>
+        <div className="absolute top-0 left-0 w-[150px] h-[120vh] bg-gradient-to-b from-rose-400/45 via-pink-500/35 to-transparent animate-aurora-dance-4 filter blur-xl" style={{animationDelay: '6s'}}></div>
+        <div className="absolute top-1/3 left-0 w-full h-[80px] bg-gradient-to-r from-transparent via-cyan-300/35 to-transparent animate-aurora-horizontal-flow filter blur-lg"></div>
       </div>
       
       <div className="relative z-10 max-w-md w-full space-y-8">

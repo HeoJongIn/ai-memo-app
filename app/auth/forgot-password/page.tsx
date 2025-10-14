@@ -1,11 +1,11 @@
-// app/auth/login/page.tsx
-// 로그인 페이지 컴포넌트
-// 사용자가 이메일과 비밀번호로 로그인할 수 있는 페이지
-// 관련 파일: components/auth/login-form.tsx, lib/supabase.ts
+// app/auth/forgot-password/page.tsx
+// 비밀번호 재설정 요청 페이지 컴포넌트
+// 사용자가 이메일을 입력하여 비밀번호 재설정 이메일을 요청하는 페이지
+// 관련 파일: components/auth/forgot-password-form.tsx, lib/supabase.ts
 
-import LoginForm from '@/components/auth/login-form'
+import ForgotPasswordForm from '@/components/auth/forgot-password-form'
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* 오로라 배경 */}
@@ -25,13 +25,13 @@ export default function LoginPage() {
       <div className="relative z-10 max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold bg-gradient-to-r from-emerald-400 via-violet-500 to-cyan-400 bg-clip-text text-transparent">
-            AI 메모장 로그인
+            비밀번호 재설정
           </h2>
           <p className="mt-2 text-center text-sm text-gray-700">
-            이메일과 비밀번호로 로그인하세요
+            이메일 주소를 입력하면 비밀번호 재설정 링크를 보내드립니다
           </p>
         </div>
-        <LoginForm />
+        <ForgotPasswordForm />
       </div>
     </div>
   )

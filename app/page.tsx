@@ -9,11 +9,13 @@ import { useEffect, useState } from 'react'
 import Link from "next/link"
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase'
+import LogoutDialog from '@/components/auth/logout-dialog'
 import type { User } from '@supabase/supabase-js'
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -37,9 +39,6 @@ export default function Home() {
     return () => subscription.unsubscribe()
   }, [supabase.auth])
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-  }
 
   if (loading) {
     return (
@@ -49,11 +48,13 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-tr from-violet-500 via-purple-600 to-fuchsia-700 opacity-20"></div>
         <div className="absolute inset-0 bg-gradient-to-bl from-rose-400 via-pink-500 to-red-600 opacity-18"></div>
         
-        {/* 오로라 애니메이션 */}
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-radial from-emerald-400 via-teal-500 to-transparent rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-aurora-1"></div>
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-gradient-radial from-violet-500 via-purple-600 to-transparent rounded-full mix-blend-screen filter blur-3xl opacity-35 animate-aurora-2"></div>
-        </div>
+               {/* 움직이는 오로라 효과 - 역동적이고 생동감 있는 움직임 */}
+               <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+                 <div className="absolute top-0 left-1/3 w-[200px] h-[120vh] bg-gradient-to-b from-emerald-400/60 via-teal-500/50 to-transparent animate-aurora-dance-1 filter blur-xl"></div>
+                 <div className="absolute top-0 left-1/2 w-[250px] h-[120vh] bg-gradient-to-b from-violet-500/55 via-purple-600/45 to-transparent animate-aurora-dance-2 filter blur-xl" style={{animationDelay: '2s'}}></div>
+                 <div className="absolute top-0 right-1/3 w-[200px] h-[120vh] bg-gradient-to-b from-blue-400/50 via-indigo-500/40 to-transparent animate-aurora-dance-3 filter blur-xl" style={{animationDelay: '4s'}}></div>
+                 <div className="absolute top-1/3 left-0 w-full h-[100px] bg-gradient-to-r from-transparent via-cyan-300/40 to-transparent animate-aurora-horizontal-flow filter blur-lg"></div>
+               </div>
         
         <div className="relative z-10 text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-4 border-cyan-400 mx-auto"></div>
@@ -71,24 +72,34 @@ export default function Home() {
       <div className="absolute inset-0 bg-gradient-to-bl from-rose-400 via-pink-500 to-red-600 opacity-18"></div>
       <div className="absolute inset-0 bg-gradient-to-tl from-blue-400 via-indigo-500 to-purple-700 opacity-12"></div>
       
-      {/* 실제 오로라 움직임 - 더 유동적이고 자연스러운 애니메이션 */}
-      <div className="absolute top-0 left-0 w-full h-full">
-        {/* 첫 번째 오로라 - 초록-청록 계열 */}
-        <div className="absolute top-1/5 left-1/6 w-[500px] h-[400px] bg-gradient-radial from-emerald-400 via-teal-500 to-transparent rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-aurora-1"></div>
-        
-        {/* 두 번째 오로라 - 보라-핑크 계열 */}
-        <div className="absolute top-1/3 right-1/5 w-[600px] h-[350px] bg-gradient-radial from-violet-500 via-purple-600 to-transparent rounded-full mix-blend-screen filter blur-3xl opacity-35 animate-aurora-2"></div>
-        
-        {/* 세 번째 오로라 - 파랑-보라 계열 */}
-        <div className="absolute bottom-1/4 left-1/4 w-[450px] h-[500px] bg-gradient-radial from-blue-400 via-indigo-500 to-transparent rounded-full mix-blend-screen filter blur-3xl opacity-30 animate-aurora-3"></div>
-        
-        {/* 네 번째 오로라 - 핑크-빨강 계열 */}
-        <div className="absolute top-1/2 right-1/3 w-[400px] h-[300px] bg-gradient-radial from-rose-400 via-pink-500 to-transparent rounded-full mix-blend-screen filter blur-3xl opacity-25 animate-aurora-4"></div>
-        
-        {/* 오로라 빛줄기 효과 */}
-        <div className="absolute top-0 left-1/2 w-1 h-full bg-gradient-to-b from-transparent via-cyan-300 to-transparent opacity-60 animate-aurora-beam"></div>
-        <div className="absolute top-0 right-1/3 w-1 h-full bg-gradient-to-b from-transparent via-purple-300 to-transparent opacity-50 animate-aurora-beam-delayed"></div>
-      </div>
+             {/* 움직이는 오로라 효과 - 역동적이고 생동감 있는 움직임 */}
+             <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+               {/* 첫 번째 움직이는 오로라 - 초록-청록 계열 */}
+               <div className="absolute top-0 left-1/4 w-[300px] h-[120vh] bg-gradient-to-b from-emerald-400/70 via-teal-500/60 to-transparent animate-aurora-dance-1 filter blur-2xl"></div>
+               
+               {/* 두 번째 움직이는 오로라 - 보라-핑크 계열 */}
+               <div className="absolute top-0 left-1/2 w-[400px] h-[120vh] bg-gradient-to-b from-violet-500/65 via-purple-600/55 to-transparent animate-aurora-dance-2 filter blur-2xl" style={{animationDelay: '3s'}}></div>
+               
+               {/* 세 번째 움직이는 오로라 - 파랑-보라 계열 */}
+               <div className="absolute top-0 right-1/4 w-[350px] h-[120vh] bg-gradient-to-b from-blue-400/60 via-indigo-500/50 to-transparent animate-aurora-dance-3 filter blur-2xl" style={{animationDelay: '6s'}}></div>
+               
+               {/* 네 번째 움직이는 오로라 - 핑크-빨강 계열 */}
+               <div className="absolute top-0 left-0 w-[250px] h-[120vh] bg-gradient-to-b from-rose-400/55 via-pink-500/45 to-transparent animate-aurora-dance-4 filter blur-2xl" style={{animationDelay: '9s'}}></div>
+               
+               {/* 수평 흐름 오로라 */}
+               <div className="absolute top-1/3 left-0 w-full h-[200px] bg-gradient-to-r from-transparent via-cyan-300/50 to-transparent animate-aurora-horizontal-flow filter blur-xl"></div>
+               <div className="absolute top-2/3 left-0 w-full h-[150px] bg-gradient-to-r from-transparent via-purple-300/45 to-transparent animate-aurora-horizontal-flow filter blur-xl" style={{animationDelay: '6s'}}></div>
+               
+               {/* 강렬한 오로라 빛의 깜빡임 */}
+               <div className="absolute top-1/5 left-1/3 w-[200px] h-[200px] bg-gradient-radial from-emerald-300/80 via-transparent to-transparent rounded-full animate-aurora-bright-flicker filter blur-lg"></div>
+               <div className="absolute top-1/2 right-1/3 w-[180px] h-[180px] bg-gradient-radial from-violet-300/75 via-transparent to-transparent rounded-full animate-aurora-bright-flicker filter blur-lg" style={{animationDelay: '2s'}}></div>
+               <div className="absolute bottom-1/4 left-1/2 w-[160px] h-[160px] bg-gradient-radial from-cyan-300/70 via-transparent to-transparent rounded-full animate-aurora-bright-flicker filter blur-lg" style={{animationDelay: '4s'}}></div>
+               
+               {/* 오로라 빛의 파동 효과 */}
+               <div className="absolute top-1/6 right-1/5 w-[120px] h-[120px] bg-gradient-radial from-emerald-200/90 via-transparent to-transparent rounded-full animate-aurora-ripple filter blur-md"></div>
+               <div className="absolute bottom-1/5 left-1/5 w-[100px] h-[100px] bg-gradient-radial from-violet-200/85 via-transparent to-transparent rounded-full animate-aurora-ripple filter blur-md" style={{animationDelay: '8s'}}></div>
+               <div className="absolute top-1/2 left-1/2 w-[80px] h-[80px] bg-gradient-radial from-cyan-200/80 via-transparent to-transparent rounded-full animate-aurora-ripple filter blur-md" style={{animationDelay: '16s'}}></div>
+             </div>
       
       <div className="relative z-10 container mx-auto px-4 py-16">
         <div className="text-center">
@@ -109,7 +120,7 @@ export default function Home() {
                 <Button size="lg" className="bg-gradient-to-r from-emerald-500 to-violet-600 hover:from-emerald-600 hover:to-violet-700 text-white border-0 shadow-lg">
                   메모 작성하기
                 </Button>
-                <Button variant="outline" size="lg" onClick={handleLogout} className="border-cyan-300 text-cyan-700 hover:bg-cyan-50">
+                <Button variant="outline" size="lg" onClick={() => setLogoutDialogOpen(true)} className="border-cyan-300 text-cyan-700 hover:bg-cyan-50">
                   로그아웃
                 </Button>
               </div>
@@ -153,6 +164,11 @@ export default function Home() {
           </div>
         </div>
       </div>
+      
+      <LogoutDialog 
+        open={logoutDialogOpen} 
+        onOpenChange={setLogoutDialogOpen} 
+      />
     </div>
   )
 }

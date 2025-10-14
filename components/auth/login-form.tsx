@@ -174,6 +174,12 @@ export default function LoginForm() {
                 회원가입
               </Link>
             </p>
+            <p className="text-sm text-gray-600 mt-2">
+              비밀번호를 잊으셨나요?{' '}
+              <Link href="/auth/forgot-password" className="text-emerald-600 hover:text-emerald-500 font-medium">
+                비밀번호 재설정
+              </Link>
+            </p>
           </div>
         </form>
       </CardContent>
