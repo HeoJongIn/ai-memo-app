@@ -8,6 +8,13 @@
       "when": 1760406676841,
       "tag": "0000_brief_jubilee",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1760417125632,
+      "tag": "0001_bumpy_wrecker",
+      "breakpoints": true
     }
   ]
 }

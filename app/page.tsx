@@ -10,14 +10,14 @@ import Link from "next/link"
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase'
 import LogoutDialog from '@/components/auth/logout-dialog'
-import OnboardingPopup from '@/components/onboarding/onboarding-popup'
+import AIMemoSummaryPopup from '@/components/ai-memo-summary-popup'
 import type { User } from '@supabase/supabase-js'
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
-  const [onboardingPopupOpen, setOnboardingPopupOpen] = useState(false)
+  const [summaryPopupOpen, setSummaryPopupOpen] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -107,8 +107,8 @@ export default function Home() {
         <div className="text-center">
           <h1 
             className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-emerald-400 via-violet-500 to-cyan-400 bg-clip-text text-transparent mb-6 animate-pulse cursor-pointer hover:scale-105 transition-transform"
-            onClick={() => setOnboardingPopupOpen(true)}
-            title="온보딩 보기"
+            onClick={() => setSummaryPopupOpen(true)}
+            title="AI 메모장 기능 보기"
           >
             AI 메모장
           </h1>
@@ -123,8 +123,11 @@ export default function Home() {
                 안녕하세요, {user.email}님! 👋
               </p>
               <div className="flex gap-4 justify-center">
-                <Button size="lg" className="bg-gradient-to-r from-emerald-500 to-violet-600 hover:from-emerald-600 hover:to-violet-700 text-white border-0 shadow-lg">
-                  메모 작성하기
+                <Button asChild size="lg" className="bg-gradient-to-r from-emerald-500 to-violet-600 hover:from-emerald-600 hover:to-violet-700 text-white border-0 shadow-lg">
+                  <Link href="/notes/create">메모 작성하기</Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="border-cyan-300 text-cyan-700 hover:bg-cyan-50">
+                  <Link href="/notes">내 노트 보기</Link>
                 </Button>
                 <Button variant="outline" size="lg" onClick={() => setLogoutDialogOpen(true)} className="border-cyan-300 text-cyan-700 hover:bg-cyan-50">
                   로그아웃
@@ -176,9 +179,9 @@ export default function Home() {
         onOpenChange={setLogoutDialogOpen} 
       />
       
-      <OnboardingPopup 
-        open={onboardingPopupOpen} 
-        onOpenChange={setOnboardingPopupOpen} 
+      <AIMemoSummaryPopup 
+        open={summaryPopupOpen} 
+        onOpenChange={setSummaryPopupOpen} 
       />
     </div>
   )

@@ -29,6 +29,17 @@ export const summaries = pgTable('summaries', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+// draft_notes 테이블: 임시 저장된 노트
+export const draftNotes = pgTable('draft_notes', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull(), // 사용자 스코프를 위한 필드
+  title: varchar('title', { length: 255 }).notNull(),
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  expiresAt: timestamp('expires_at').notNull(), // 자동 삭제를 위한 만료 시간
+});
+
 // 타입 정의를 위한 export
 export type Note = typeof notes.$inferSelect;
 export type NewNote = typeof notes.$inferInsert;
@@ -36,3 +47,5 @@ export type NoteTag = typeof noteTags.$inferSelect;
 export type NewNoteTag = typeof noteTags.$inferInsert;
 export type Summary = typeof summaries.$inferSelect;
 export type NewSummary = typeof summaries.$inferInsert;
+export type DraftNote = typeof draftNotes.$inferSelect;
+export type NewDraftNote = typeof draftNotes.$inferInsert;

@@ -54,29 +54,15 @@ export default function SignupForm() {
     setError(null)
 
     try {
-      // 먼저 이메일이 이미 존재하는지 확인 (비밀번호 재설정 요청으로 확인)
-      const { error: checkError } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: 'http://localhost:3001/auth/reset-password'
-      })
-
-      // 이메일이 존재하지 않는 경우 (사용자를 찾을 수 없다는 에러)
-      if (checkError && checkError.message.includes('User not found')) {
-        // 이메일이 존재하지 않으므로 회원가입 진행
-      } else if (!checkError) {
-        // 이메일이 존재하는 경우
-        setError('이미 가입된 이메일입니다.')
-        return
-      }
-
-      // 실제 회원가입 시도
+      // 직접 회원가입 시도
       const { error } = await supabase.auth.signUp({
         email: data.email,
-        password: data.password,
+        password: data.password
       })
 
       if (error) {
         // 에러 메시지를 사용자 친화적으로 변환
-        console.log('Supabase error:', error) // 디버깅용
+        console.log('Supabase signup error:', error) // 디버깅용
         
         // 중복 이메일 에러 처리
         if (error.message.includes('already registered') || 
@@ -84,6 +70,7 @@ export default function SignupForm() {
             error.message.includes('duplicate') ||
             error.message.includes('already exists') ||
             error.message.includes('email address is already in use') ||
+            error.message.includes('User already registered') ||
             error.code === '23505' ||
             error.code === 'duplicate_email') {
           setError('이미 가입된 이메일입니다.')
@@ -115,6 +102,7 @@ export default function SignupForm() {
       // 회원가입 성공 시 온보딩 페이지로 리다이렉션
       router.push('/onboarding')
     } catch (err) {
+      console.error('Unexpected signup error:', err)
       setError('예상치 못한 오류가 발생했습니다. 다시 시도해주세요.')
     } finally {
       setIsLoading(false)
