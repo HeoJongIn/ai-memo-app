@@ -8,7 +8,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   testGeminiConnectionAction,
@@ -71,8 +70,9 @@ export default function GeminiModelTestPage() {
       } else {
         setConnectionStatus(`❌ API 연결 실패: ${result.error}`);
       }
-    } catch (error: any) {
-      setConnectionStatus(`❌ 오류 발생: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
+      setConnectionStatus(`❌ 오류 발생: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -115,8 +115,9 @@ export default function GeminiModelTestPage() {
       } else {
         setTestResult(`❌ 모델 테스트 실패: ${result.error}`);
       }
-    } catch (error: any) {
-      setTestResult(`❌ 오류 발생: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
+      setTestResult(`❌ 오류 발생: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

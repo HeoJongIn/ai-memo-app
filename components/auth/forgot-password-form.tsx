@@ -87,7 +87,7 @@ export default function ForgotPasswordForm() {
           <div className="space-y-4">
             <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
               <p className="text-sm">
-                비밀번호 재설정 링크가 <strong>{register('email').value || '입력하신 이메일'}</strong>로 전송되었습니다.
+                비밀번호 재설정 링크가 <strong>입력하신 이메일</strong>로 전송되었습니다.
                 이메일을 확인하고 링크를 클릭하여 비밀번호를 재설정해주세요.
               </p>
             </div>

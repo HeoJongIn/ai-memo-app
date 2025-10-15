@@ -138,8 +138,8 @@ export function MarkdownEditor({
                 onChange={(val) => onContentChange(val || '')}
                 preview={previewMode}
                 height={400}
-                data-color-mode="auto"
-                visibleDragBar={false}
+                data-color-mode="light"
+                visibleDragbar={false}
                 textareaProps={{
                   placeholder: '마크다운으로 노트 내용을 작성하세요...',
                   style: {

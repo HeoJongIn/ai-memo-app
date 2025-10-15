@@ -42,18 +42,18 @@ export function DeleteAllNotesDialog({
 
     if (result.success) {
       addToast({
-        type: 'success',
+        variant: 'default',
         title: '모든 노트 삭제 완료',
-        message: `${result.data?.deletedCount}개의 노트가 성공적으로 삭제되었습니다.`,
+        description: `${result.data?.deletedCount}개의 노트가 성공적으로 삭제되었습니다.`,
       });
       onSuccess();
       onOpenChange(false);
       router.push('/notes'); // 노트 목록 페이지로 이동 또는 새로고침
     } else {
       addToast({
-        type: 'error',
+        variant: 'destructive',
         title: '노트 삭제 실패',
-        message: result.error || '모든 노트를 삭제하는 중 오류가 발생했습니다.',
+        description: result.error || '모든 노트를 삭제하는 중 오류가 발생했습니다.',
       });
     }
   };

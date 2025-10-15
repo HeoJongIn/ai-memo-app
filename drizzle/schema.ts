@@ -40,6 +40,7 @@ export const draftNotes = pgTable('draft_notes', {
   expiresAt: timestamp('expires_at').notNull(), // 자동 삭제를 위한 만료 시간
 });
 
+
 // 타입 정의를 위한 export
 export type Note = typeof notes.$inferSelect;
 export type NewNote = typeof notes.$inferInsert;
