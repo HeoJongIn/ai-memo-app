@@ -14,7 +14,7 @@ import { getDraftsAction } from '@/lib/actions/notes';
 import { DraftCard } from '@/components/notes/draft-card';
 import { DraftStatusIndicator } from '@/components/notes/draft-status-indicator';
 import { ArrowLeft, FileText, Clock, AlertCircle } from 'lucide-react';
-import type { DraftNote } from '@/lib/types/database';
+import type { DraftNote } from '@/drizzle/schema';
 
 export default function DraftsPage() {
   const [drafts, setDrafts] = useState<DraftNote[]>([]);
@@ -31,7 +31,7 @@ export default function DraftsPage() {
     try {
       const result = await getDraftsAction();
       
-      if (result.success) {
+      if (result.success && result.data) {
         setDrafts(result.data);
       } else {
         addToast({

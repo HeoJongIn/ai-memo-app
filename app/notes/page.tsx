@@ -8,7 +8,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { NoteCard } from '@/components/notes/note-card';
 import { Pagination } from '@/components/ui/pagination';
 import { EmptyNotes } from '@/components/notes/empty-notes';
@@ -49,7 +48,7 @@ export default function NotesPage() {
     try {
       const result = await getNotesAction(page, 10, sortBy);
       
-      if (result.success) {
+      if (result.success && result.data) {
         setNotes(result.data.notes);
         setPagination(result.data.pagination);
       } else {

@@ -29,10 +29,10 @@ function logError(errorInfo: AIErrorInfo, context?: unknown): void {
   
   // 에러 모니터링 시스템에 로그 추가
   logAIError(errorInfo, {
-    action: context?.action || 'unknown',
-    retryCount: context?.retryCount,
-    success: context?.success,
-    ...context
+    action: 'unknown',
+    retryCount: 0,
+    success: false,
+    ...(context || {})
   });
   
   // TODO: 실제 프로덕션에서는 외부 로깅 서비스로 전송
@@ -41,7 +41,7 @@ function logError(errorInfo: AIErrorInfo, context?: unknown): void {
 
 // 에러 분류 및 사용자 친화적 메시지 생성
 function classifyError(error: unknown): AIErrorInfo {
-  const errorMessage = error?.message || error?.toString() || '알 수 없는 오류';
+  const errorMessage = (error instanceof Error ? error.message : String(error)) || '알 수 없는 오류';
   
   // 인증 관련 에러
   if (errorMessage.includes('로그인이 필요') || errorMessage.includes('인증')) {
@@ -170,12 +170,29 @@ function validateTokenLimit(text: string, maxTokens: number = 8192): void {
   }
 }
 
+// Gemini API 응답에서 토큰 사용량 추출 및 비용 계산
+function extractTokenUsage(usageMetadata: any): any {
+  const inputTokens = usageMetadata.promptTokenCount || 0;
+  const outputTokens = usageMetadata.candidatesTokenCount || 0;
+  const totalTokens = usageMetadata.totalTokenCount || 0;
+  
+  // 비용 계산 (1K 토큰당 $0.0005)
+  const cost = (totalTokens / 1000) * 0.0005;
+  
+  return {
+    inputTokens,
+    outputTokens,
+    totalTokens,
+    cost: Math.round(cost * 1000000) / 1000000 // 소수점 6자리까지 정확하게
+  };
+}
+
 // 재시도 로직이 포함된 API 호출 함수 (강화된 에러 처리)
 async function callGeminiWithRetry(
   prompt: string,
   maxRetries: number = 3,
   baseDelayMs: number = 1000
-): Promise<string> {
+): Promise<{ text: string; usageMetadata?: any }> {
   const client = createGeminiClient();
   let lastError: unknown = null;
   
@@ -192,7 +209,10 @@ async function callGeminiWithRetry(
       
       // 성공 시 로깅
       console.log(`Gemini API 호출 성공 (시도 ${attempt}/${maxRetries})`);
-      return response.text;
+      return { 
+        text: response.text,
+        usageMetadata: response.usageMetadata
+      };
       
     } catch (error) {
       lastError = error;
@@ -293,7 +313,8 @@ ${note.content}
 요약:`;
 
     // Gemini API 호출
-    const summary = await callGeminiWithRetry(summaryPrompt);
+    const result = await callGeminiWithRetry(summaryPrompt, 3, 1000);
+    const summary = result.text;
 
     // 요약을 데이터베이스에 저장
     try {
@@ -396,7 +417,8 @@ ${note.content}
 태그 (쉼표로 구분):`;
 
     // Gemini API 호출
-    const tagResponse = await callGeminiWithRetry(tagPrompt);
+    const result = await callGeminiWithRetry(tagPrompt, 3, 1000);
+    const tagResponse = result.text;
 
     // 태그 파싱 및 정리
     let tags: string[] = [];
@@ -762,11 +784,11 @@ export async function testGeminiConnectionAction(): Promise<{
 }> {
   try {
     const testPrompt = '안녕하세요. 연결 테스트입니다.';
-    const response = await callGeminiWithRetry(testPrompt);
+    const result = await callGeminiWithRetry(testPrompt);
     
     return { 
       success: true, 
-      data: { message: `API 연결 성공: ${response}` } 
+      data: { message: `API 연결 성공: ${result.text}` } 
     };
   } catch (error) {
     console.error('Error testing Gemini connection:', error);

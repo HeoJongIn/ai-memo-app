@@ -51,11 +51,12 @@ async function callGeminiWithRetry(
       } else {
         throw new Error('API 응답에서 텍스트를 찾을 수 없습니다.');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(`Gemini API 호출 실패 (시도 ${attempt}/${maxRetries}):`, error);
       
       if (attempt === maxRetries) {
-        throw new Error(`API 호출이 ${maxRetries}번 실패했습니다: ${error.message}`);
+        const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
+        throw new Error(`API 호출이 ${maxRetries}번 실패했습니다: ${errorMessage}`);
       }
       
       // 지수 백오프로 재시도 간격 증가
@@ -109,13 +110,15 @@ export async function POST(request: NextRequest) {
       data: result,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Gemini API 테스트 오류:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : '서버 오류가 발생했습니다.';
     
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || '서버 오류가 발생했습니다.' 
+        error: errorMessage
       },
       { status: 500 }
     );

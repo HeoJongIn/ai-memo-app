@@ -102,9 +102,9 @@ export function MarkdownRenderer({
               remarkPlugins={[remarkGfm]}
               components={{
                 // 코드 블록 스타일링
-                code: ({ node, inline, className, children, ...props }) => {
+                code: ({ className, children, ...props }) => {
                   const match = /language-(\w+)/.exec(className || '');
-                  return !inline && match ? (
+                  return match ? (
                     <div className="bg-gray-100 dark:bg-gray-800 rounded-md p-4 my-4">
                       <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 font-mono">
                         {match[1]}

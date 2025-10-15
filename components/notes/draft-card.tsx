@@ -13,7 +13,7 @@ import { useToast } from '@/components/ui/toast';
 import { convertDraftToNoteAction, deleteDraftAction } from '@/lib/actions/notes';
 import { DraftStatusIndicator } from './draft-status-indicator';
 import { FileText, Edit, Trash2, CheckCircle, Clock } from 'lucide-react';
-import type { DraftNote } from '@/lib/types/database';
+import type { DraftNote } from '@/drizzle/schema';
 
 interface DraftCardProps {
   draft: DraftNote;
@@ -40,7 +40,9 @@ export function DraftCard({ draft, onConvert, onDelete, className = '' }: DraftC
           variant: 'default',
         });
         
-        onConvert?.(result.data.id);
+        if (result.data?.id) {
+          onConvert?.(result.data.id);
+        }
       } else {
         addToast({
           title: '오류',
