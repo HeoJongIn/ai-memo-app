@@ -65,7 +65,7 @@ export function useAutoSave({
           variant: 'destructive',
         });
       }
-    } catch {
+    } catch (error) {
       addToast({
         title: '자동 저장 오류',
         description: '예상치 못한 오류가 발생했습니다.',
