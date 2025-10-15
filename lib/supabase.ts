@@ -1,6 +1,6 @@
 // lib/supabase.ts
 // Supabase 클라이언트 설정 파일
-// 클라이언트와 서버에서 Supabase 인스턴스를 생성하고 관리
+// 클라이언트에서 Supabase 인스턴스를 생성하고 관리
 // 관련 파일: app/layout.tsx, components/auth/signup-form.tsx
 
 import { createBrowserClient } from '@supabase/ssr'
