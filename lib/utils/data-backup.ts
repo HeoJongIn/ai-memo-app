@@ -140,8 +140,9 @@ export async function rollbackOnFailure(
 
   try {
     // 원본 데이터로 복원
-    setSummary(backup.data.summary);
-    setTags(backup.data.tags);
+    const backupData = backup.data as { summary: string | null; tags: string[] };
+    setSummary(backupData.summary);
+    setTags(backupData.tags);
     
     console.log(`데이터 롤백 완료: ${backupId}`);
     return true;

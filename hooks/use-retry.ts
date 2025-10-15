@@ -52,7 +52,7 @@ export function useRetry(options: RetryOptions = {}) {
       }
     }
 
-    let lastError: any = null;
+    let lastError: unknown = null;
     
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {

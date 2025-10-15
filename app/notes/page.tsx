@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { NoteCard } from '@/components/notes/note-card';
@@ -28,6 +28,14 @@ interface PaginationInfo {
 }
 
 export default function NotesPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NotesPageContent />
+    </Suspense>
+  );
+}
+
+function NotesPageContent() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,11 +47,7 @@ export default function NotesPage() {
   const currentPage = parseInt(searchParams.get('page') || '1');
   const currentSort = (searchParams.get('sort') as SortOption) || 'latest';
 
-  useEffect(() => {
-    loadNotes(currentPage, currentSort);
-  }, [currentPage, currentSort]);
-
-  const loadNotes = async (page: number, sortBy: SortOption = 'latest') => {
+  const loadNotes = useCallback(async (page: number, sortBy: SortOption = 'latest') => {
     setIsLoading(true);
     try {
       const result = await getNotesAction(page, 10, sortBy);
@@ -67,7 +71,11 @@ export default function NotesPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [addToast]);
+
+  useEffect(() => {
+    loadNotes(currentPage, currentSort);
+  }, [loadNotes, currentPage, currentSort]);
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams);

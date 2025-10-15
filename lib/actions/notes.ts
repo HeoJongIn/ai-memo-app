@@ -5,11 +5,10 @@
 
 'use server';
 
-import { eq, and, desc, sql, lt } from 'drizzle-orm';
+import { eq, and, desc, sql } from 'drizzle-orm';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { db } from '../db';
-import { notes, noteTags, summaries, draftNotes, type Note, type NewNote, type NewDraftNote } from '../../drizzle/schema';
-import type { NewNoteTag, NewSummary } from '../types/database';
+import { notes, noteTags, summaries, draftNotes, type NewNote } from '../../drizzle/schema';
 
 // 노트 생성 서버 액션 (클라이언트에서 호출)
 export async function createNoteAction(title: string, content: string) {
@@ -557,7 +556,7 @@ export async function deleteDraftAction(draftId: string) {
 // 만료된 임시 노트 정리 함수 (배치 처리용)
 export async function cleanupExpiredDrafts() {
   try {
-    const result = await db
+    await db
       .delete(draftNotes)
       .where(sql`${draftNotes.expiresAt} <= NOW()`);
 

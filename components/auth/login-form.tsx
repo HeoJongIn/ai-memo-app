@@ -16,7 +16,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import type { User } from '@supabase/supabase-js'
 
 // 폼 유효성 검사 스키마
 const loginSchema = z.object({
@@ -35,7 +34,6 @@ type LoginFormData = z.infer<typeof loginSchema>
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -101,7 +99,7 @@ export default function LoginForm() {
 
       // 로그인 성공 시 메인 페이지로 리다이렉션
       router.push('/')
-    } catch (err) {
+    } catch {
       setError('예상치 못한 오류가 발생했습니다. 다시 시도해주세요.')
     } finally {
       setIsLoading(false)

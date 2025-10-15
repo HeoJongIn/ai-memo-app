@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -29,7 +29,6 @@ interface NoteTagsProps {
 export function NoteTags({ noteId, existingTags = [], onTagsGenerated }: NoteTagsProps) {
   const [tags, setTags] = useState<string[]>(existingTags);
   const [showOverwriteDialog, setShowOverwriteDialog] = useState(false);
-  const [backupId, setBackupId] = useState<string | null>(null);
   const { addToast } = useToast();
   const aiStatus = useAIStatus();
   
@@ -49,12 +48,7 @@ export function NoteTags({ noteId, existingTags = [], onTagsGenerated }: NoteTag
     }
   });
 
-  // 컴포넌트 마운트 시 기존 태그 로드
-  useEffect(() => {
-    loadExistingTags();
-  }, [noteId]);
-
-  const loadExistingTags = async () => {
+  const loadExistingTags = useCallback(async () => {
     try {
       const result = await getTagsAction(noteId);
       if (result.success && result.data) {
@@ -63,7 +57,12 @@ export function NoteTags({ noteId, existingTags = [], onTagsGenerated }: NoteTag
     } catch (error) {
       console.error('Failed to load tags:', error);
     }
-  };
+  }, [noteId]);
+
+  // 컴포넌트 마운트 시 기존 태그 로드
+  useEffect(() => {
+    loadExistingTags();
+  }, [loadExistingTags]);
 
   const handleGenerateTags = async () => {
     // 기존 태그가 있는 경우 덮어쓰기 확인
@@ -82,7 +81,6 @@ export function NoteTags({ noteId, existingTags = [], onTagsGenerated }: NoteTag
 
     // AI 처리 전 데이터 백업
     const currentBackupId = backupBeforeAIProcessing(noteId, null, tags);
-    setBackupId(currentBackupId);
 
     try {
       const result = await executeWithRetry(async () => {
@@ -108,9 +106,6 @@ export function NoteTags({ noteId, existingTags = [], onTagsGenerated }: NoteTag
       setTags(result.data!.tags);
       onTagsGenerated?.(result.data!.tags);
       aiStatus.setSuccess('tags', `${result.data!.tags.length}개의 태그가 ${actionText}되었습니다.`);
-      
-      // 성공 시 백업 정리
-      setBackupId(null);
       
       addToast({
         title: `태그 ${actionText} 완료`,
@@ -138,7 +133,6 @@ export function NoteTags({ noteId, existingTags = [], onTagsGenerated }: NoteTag
           });
         }
         
-        setBackupId(null);
       }
       
       // 에러 토스트는 useRetry의 onMaxRetriesReached에서 처리

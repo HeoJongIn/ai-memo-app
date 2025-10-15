@@ -45,7 +45,7 @@ export default function LogoutDialog({ open, onOpenChange }: LogoutDialogProps) 
       // 로그아웃 성공 시 다이얼로그를 먼저 닫고 리다이렉션
       onOpenChange(false)
       router.push('/')
-    } catch (err) {
+    } catch {
       setError('예상치 못한 오류가 발생했습니다. 다시 시도해주세요.')
     } finally {
       setIsLoading(false)

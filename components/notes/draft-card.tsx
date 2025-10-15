@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/toast';
 import { convertDraftToNoteAction, deleteDraftAction } from '@/lib/actions/notes';
 import { DraftStatusIndicator } from './draft-status-indicator';
-import { FileText, Edit, Trash2, CheckCircle, Clock } from 'lucide-react';
+import { FileText, Trash2, CheckCircle, Clock } from 'lucide-react';
 import type { DraftNote } from '@/drizzle/schema';
 
 interface DraftCardProps {

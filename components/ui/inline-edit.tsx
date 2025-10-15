@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Check, X, Edit3 } from 'lucide-react';
 
@@ -107,26 +107,26 @@ export function InlineEdit({
   }, [isEditing, multiline]);
 
   // 외부 클릭 시 편집 취소
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (isEditing && inputRef.current) {
-        const target = event.target as Node;
-        // 입력 필드나 버튼 영역이 아닌 경우에만 취소
-        const isInputField = inputRef.current.contains(target);
-        const isButton = (target as Element)?.closest('button') !== null;
-        
-        if (!isInputField && !isButton) {
-          console.log('Outside click detected, canceling edit');
-          cancelEditing();
-        }
+  const handleClickOutside = useCallback((event: MouseEvent) => {
+    if (isEditing && inputRef.current) {
+      const target = event.target as Node;
+      // 입력 필드나 버튼 영역이 아닌 경우에만 취소
+      const isInputField = inputRef.current.contains(target);
+      const isButton = (target as Element)?.closest('button') !== null;
+      
+      if (!isInputField && !isButton) {
+        console.log('Outside click detected, canceling edit');
+        cancelEditing();
       }
-    };
+    }
+  }, [isEditing, cancelEditing]);
 
+  useEffect(() => {
     if (isEditing) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [isEditing]);
+  }, [isEditing, handleClickOutside]);
 
   if (isEditing) {
     return (

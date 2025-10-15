@@ -5,8 +5,7 @@
 
 'use client'
 
-import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import OnboardingContainer from './onboarding-container'
 
 interface OnboardingPopupProps {
@@ -15,10 +14,8 @@ interface OnboardingPopupProps {
 }
 
 export default function OnboardingPopup({ open, onOpenChange }: OnboardingPopupProps) {
-  const [isOnboardingComplete, setIsOnboardingComplete] = useState(false)
 
   const handleOnboardingComplete = () => {
-    setIsOnboardingComplete(true)
     onOpenChange(false)
   }
 

@@ -11,6 +11,8 @@ export type {
   NewSummary,
 } from '../../drizzle/schema';
 
+import type { Note, NoteTag, Summary } from '../../drizzle/schema';
+
 // 추가 유틸리티 타입들
 export type NoteWithTags = Note & {
   tags: NoteTag[];

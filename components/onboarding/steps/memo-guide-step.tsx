@@ -5,11 +5,10 @@
 
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-export default function MemoGuideStep({ isPopup = false }: { isPopup?: boolean }) {
+export default function MemoGuideStep() {
   const [demoTitle, setDemoTitle] = useState('')
   const [demoContent, setDemoContent] = useState('')
 

@@ -5,10 +5,10 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { EditNoteForm } from '@/components/notes/edit-note-form';
 import { MarkdownEditor } from '@/components/notes/markdown-editor';
 import { CancelEditDialog } from '@/components/notes/cancel-edit-dialog';
@@ -31,13 +31,7 @@ export default function EditNotePage() {
 
   const noteId = params.id as string;
 
-  useEffect(() => {
-    if (noteId) {
-      loadNote(noteId);
-    }
-  }, [noteId]);
-
-  const loadNote = async (id: string) => {
+  const loadNote = useCallback(async (id: string) => {
     setIsLoading(true);
     try {
       const result = await getNoteAction(id);
@@ -72,7 +66,13 @@ export default function EditNotePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [addToast, router]);
+
+  useEffect(() => {
+    if (noteId) {
+      loadNote(noteId);
+    }
+  }, [noteId, loadNote]);
 
   const handleSave = async () => {
     if (!note) return;

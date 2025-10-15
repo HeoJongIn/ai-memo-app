@@ -28,7 +28,6 @@ interface NoteSummaryProps {
 
 export function NoteSummary({ noteId, existingSummary, onSummaryGenerated }: NoteSummaryProps) {
   const [summary, setSummary] = useState<string | null>(existingSummary?.content || null);
-  const [backupId, setBackupId] = useState<string | null>(null);
   const [lastError, setLastError] = useState<{ type: AIErrorType; message: string } | null>(null);
   const { addToast } = useToast();
   const aiStatus = useAIStatus();
@@ -55,7 +54,6 @@ export function NoteSummary({ noteId, existingSummary, onSummaryGenerated }: Not
     
     // AI 처리 전 데이터 백업
     const currentBackupId = backupBeforeAIProcessing(noteId, summary, []);
-    setBackupId(currentBackupId);
     
     try {
       const result = await executeWithRetry(async () => {
@@ -81,9 +79,6 @@ export function NoteSummary({ noteId, existingSummary, onSummaryGenerated }: Not
       setSummary(result.data!.summary);
       onSummaryGenerated?.(result.data!.summary);
       aiStatus.setSuccess('summary', `요약이 성공적으로 ${actionText}되었습니다.`);
-      
-      // 성공 시 백업 정리
-      setBackupId(null);
       
       addToast({
         title: `요약 ${actionText} 완료`,
@@ -118,7 +113,6 @@ export function NoteSummary({ noteId, existingSummary, onSummaryGenerated }: Not
           });
         }
         
-        setBackupId(null);
       }
       
       // 에러 토스트는 useRetry의 onMaxRetriesReached에서 처리

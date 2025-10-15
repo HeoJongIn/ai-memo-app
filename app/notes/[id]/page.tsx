@@ -5,10 +5,10 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { NoteDetail } from '@/components/notes/note-detail';
 import { MarkdownRenderer } from '@/components/notes/markdown-renderer';
 import { NoteSummary } from '@/components/notes/note-summary';
@@ -31,13 +31,7 @@ export default function NoteDetailPage() {
 
   const noteId = params.id as string;
 
-  useEffect(() => {
-    if (noteId) {
-      loadNote(noteId);
-    }
-  }, [noteId]);
-
-  const loadNote = async (id: string) => {
+  const loadNote = useCallback(async (id: string) => {
     setIsLoading(true);
     try {
       const [noteResult, summaryResult] = await Promise.all([
@@ -78,7 +72,13 @@ export default function NoteDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [addToast, router]);
+
+  useEffect(() => {
+    if (noteId) {
+      loadNote(noteId);
+    }
+  }, [noteId, loadNote]);
 
   const handleEdit = () => {
     if (note) {

@@ -171,20 +171,10 @@ function validateTokenLimit(text: string, maxTokens: number = 8192): void {
 }
 
 // Gemini API 응답에서 토큰 사용량 추출 및 비용 계산
-function extractTokenUsage(usageMetadata: any): any {
-  const inputTokens = usageMetadata.promptTokenCount || 0;
-  const outputTokens = usageMetadata.candidatesTokenCount || 0;
-  const totalTokens = usageMetadata.totalTokenCount || 0;
-  
-  // 비용 계산 (1K 토큰당 $0.0005)
-  const cost = (totalTokens / 1000) * 0.0005;
-  
-  return {
-    inputTokens,
-    outputTokens,
-    totalTokens,
-    cost: Math.round(cost * 1000000) / 1000000 // 소수점 6자리까지 정확하게
-  };
+interface UsageMetadata {
+  promptTokenCount?: number;
+  candidatesTokenCount?: number;
+  totalTokenCount?: number;
 }
 
 // 재시도 로직이 포함된 API 호출 함수 (강화된 에러 처리)
@@ -192,9 +182,8 @@ async function callGeminiWithRetry(
   prompt: string,
   maxRetries: number = 3,
   baseDelayMs: number = 1000
-): Promise<{ text: string; usageMetadata?: any }> {
+): Promise<{ text: string; usageMetadata?: UsageMetadata }> {
   const client = createGeminiClient();
-  let lastError: unknown = null;
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -215,7 +204,6 @@ async function callGeminiWithRetry(
       };
       
     } catch (error) {
-      lastError = error;
       const errorInfo = classifyError(error);
       
       // 에러 로깅
@@ -428,7 +416,7 @@ ${note.content}
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0 && tag.length <= 100)
         .slice(0, 6); // 최대 6개로 제한
-    } catch (parseError) {
+    } catch {
       const errorInfo = classifyError(new Error('AI 응답을 파싱하는 중 오류가 발생했습니다.'));
       logError(errorInfo, { noteId, tagResponse, action: 'generateTags' });
       return { 
@@ -546,15 +534,6 @@ export async function generateAIProcessingAction(noteId: string): Promise<{
 
     // 기존 데이터 백업 (클라이언트에서 처리)
     // 서버에서는 기존 데이터 조회만 수행
-    const existingSummary = await db.query.summaries.findFirst({
-      where: eq(summaries.noteId, noteId),
-      columns: { content: true }
-    });
-
-    const existingTags = await db.query.noteTags.findMany({
-      where: eq(noteTags.noteId, noteId),
-      columns: { tag: true }
-    });
 
     // 요약과 태그를 병렬로 생성
     const [summaryResult, tagsResult] = await Promise.allSettled([

@@ -7,7 +7,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Dialog,
   DialogContent,
@@ -36,7 +35,6 @@ export function DeleteNoteDialog({
   onConfirm 
 }: DeleteNoteDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
-  const router = useRouter();
   const { addToast } = useToast();
 
   const handleDelete = async () => {

@@ -72,13 +72,13 @@ export default function OnboardingContainer({ onComplete, isPopup = false }: Onb
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 1:
-        return <WelcomeStep isPopup={isPopup} />
+        return <WelcomeStep />
       case 2:
-        return <MemoGuideStep isPopup={isPopup} />
+        return <MemoGuideStep />
       case 3:
-        return <AIDemoStep isPopup={isPopup} />
+        return <AIDemoStep />
       default:
-        return <WelcomeStep isPopup={isPopup} />
+        return <WelcomeStep />
     }
   }
 

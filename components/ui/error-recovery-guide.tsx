@@ -5,7 +5,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { 
   AlertCircle, 
   RefreshCw, 
@@ -13,8 +12,7 @@ import {
   FileText, 
   Wifi, 
   Clock,
-  HelpCircle,
-  ExternalLink
+  HelpCircle
 } from 'lucide-react';
 import { AIErrorType } from '@/lib/types/ai-errors';
 

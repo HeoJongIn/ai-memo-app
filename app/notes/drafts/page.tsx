@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,11 +22,7 @@ export default function DraftsPage() {
   const router = useRouter();
   const { addToast } = useToast();
 
-  useEffect(() => {
-    loadDrafts();
-  }, []);
-
-  const loadDrafts = async () => {
+  const loadDrafts = useCallback(async () => {
     setIsLoading(true);
     try {
       const result = await getDraftsAction();
@@ -49,7 +45,11 @@ export default function DraftsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [addToast]);
+
+  useEffect(() => {
+    loadDrafts();
+  }, [loadDrafts]);
 
   const handleConvertToNote = (noteId: string) => {
     // 정식 노트로 변환된 후 노트 상세 페이지로 이동

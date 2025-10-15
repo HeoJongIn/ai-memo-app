@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { Button } from './button';
-import { RefreshCw, AlertCircle, CheckCircle } from 'lucide-react';
+import { RefreshCw, AlertCircle } from 'lucide-react';
 
 interface RetryIndicatorProps {
   isRetrying: boolean;

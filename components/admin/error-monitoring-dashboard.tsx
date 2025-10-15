@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, TrendingUp, TrendingDown, Minus, RefreshCw } from 'lucide-react';
-import { getErrorStats, getErrorPatterns, errorMonitor } from '@/lib/utils/error-monitoring';
+import { getErrorStats, getErrorPatterns } from '@/lib/utils/error-monitoring';
 import type { ErrorStats, ErrorLogEntry } from '@/lib/utils/error-monitoring';
 
 interface ErrorMonitoringDashboardProps {

@@ -3,11 +3,11 @@
 // AI 요약 및 태깅 기능을 시연하는 컴포넌트
 // 관련 파일: components/onboarding/onboarding-container.tsx
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
-export default function AIDemoStep({ isPopup = false }: { isPopup?: boolean }) {
+export default function AIDemoStep() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [showSummary, setShowSummary] = useState(false)
   const [showTags, setShowTags] = useState(false)
