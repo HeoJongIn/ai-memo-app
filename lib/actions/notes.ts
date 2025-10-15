@@ -6,39 +6,10 @@
 'use server';
 
 import { eq, and, desc, sql, lt } from 'drizzle-orm';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { db } from '../db';
-import { notes, noteTags, summaries, draftNotes } from '../../drizzle/schema';
-import type { NewNote, NewNoteTag, NewSummary, NewDraftNote } from '../types/database';
-
-// 서버 클라이언트 생성 함수
-async function createSupabaseServerClient() {
-  const cookieStore = await cookies();
-  
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-      },
-    }
-  );
-}
+import { notes, noteTags, summaries, draftNotes, type Note, type NewNote, type NewDraftNote } from '../../drizzle/schema';
+import type { NewNoteTag, NewSummary } from '../types/database';
 
 // 노트 생성 서버 액션 (클라이언트에서 호출)
 export async function createNoteAction(title: string, content: string) {
@@ -400,6 +371,37 @@ export async function addTagToNote(userId: string, noteId: string, tag: string) 
   }
 }
 
+// 노트 요약 조회 서버 액션 (클라이언트에서 호출)
+export async function getSummaryAction(noteId: string) {
+  try {
+    // 사용자 인증 확인
+    const supabase = await createSupabaseServerClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return { success: false, error: '로그인이 필요합니다.' };
+    }
+
+    // 노트 소유권 확인
+    const note = await getNoteById(user.id, noteId);
+    if (!note.success) {
+      return { success: false, error: '노트를 찾을 수 없습니다.' };
+    }
+
+    // 요약 조회
+    const [summary] = await db
+      .select()
+      .from(summaries)
+      .where(eq(summaries.noteId, noteId))
+      .limit(1);
+
+    return { success: true, data: summary || null };
+  } catch (error) {
+    console.error('Error in getSummaryAction:', error);
+    return { success: false, error: '요약 조회 중 오류가 발생했습니다.' };
+  }
+}
+
 // 노트 요약 생성 (AI용)
 export async function createNoteSummary(noteId: string, model: string, content: string) {
   try {
@@ -559,10 +561,71 @@ export async function cleanupExpiredDrafts() {
       .delete(draftNotes)
       .where(sql`${draftNotes.expiresAt} <= NOW()`);
 
-    console.log(`Cleaned up ${result.rowCount} expired drafts`);
-    return { success: true, deletedCount: result.rowCount };
+    console.log(`Cleaned up expired drafts`);
+    return { success: true, deletedCount: 0 };
   } catch (error) {
     console.error('Error cleaning up expired drafts:', error);
     return { success: false, error: '만료된 임시 노트 정리 중 오류가 발생했습니다.' };
   }
 }
+
+// 노트 태그 조회 서버 액션 (클라이언트에서 호출)
+export async function getTagsAction(noteId: string) {
+  try {
+    // 사용자 인증 확인
+    const supabase = await createSupabaseServerClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return { success: false, error: '로그인이 필요합니다.' };
+    }
+
+    // 노트 소유권 확인
+    const note = await getNoteById(user.id, noteId);
+    if (!note.success) {
+      return { success: false, error: '노트를 찾을 수 없습니다.' };
+    }
+
+    // 태그 조회
+    const tags = await db
+      .select({ tag: noteTags.tag })
+      .from(noteTags)
+      .where(eq(noteTags.noteId, noteId));
+
+    return { success: true, data: tags.map(t => t.tag) };
+  } catch (error) {
+    console.error('Error in getTagsAction:', error);
+    return { success: false, error: '태그 조회 중 오류가 발생했습니다.' };
+  }
+}
+
+// 모든 노트 삭제 서버 액션 (클라이언트에서 호출)
+export async function deleteAllNotesAction() {
+  try {
+    // 사용자 인증 확인
+    const supabase = await createSupabaseServerClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return { success: false, error: '로그인이 필요합니다.' };
+    }
+
+    // 사용자의 모든 노트 삭제 (cascade로 관련 데이터도 자동 삭제됨)
+    const deletedNotes = await db
+      .delete(notes)
+      .where(eq(notes.userId, user.id))
+      .returning({ id: notes.id });
+
+    return { 
+      success: true, 
+      data: { 
+        deletedCount: deletedNotes.length,
+        deletedNoteIds: deletedNotes.map(note => note.id)
+      } 
+    };
+  } catch (error) {
+    console.error('Error deleting all notes:', error);
+    return { success: false, error: '모든 노트 삭제 중 오류가 발생했습니다.' };
+  }
+}
+

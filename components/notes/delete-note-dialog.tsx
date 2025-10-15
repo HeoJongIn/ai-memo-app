@@ -89,7 +89,7 @@ export function DeleteNoteDialog({
           <div className="space-y-3 mt-4">
             <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
               <div className="font-medium text-gray-900 dark:text-white">
-                "{noteTitle}"
+                &quot;{noteTitle}&quot;
               </div>
             </div>
             <div className="text-red-600 dark:text-red-400 font-medium">

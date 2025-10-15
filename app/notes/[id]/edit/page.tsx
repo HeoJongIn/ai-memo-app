@@ -10,9 +10,10 @@ import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EditNoteForm } from '@/components/notes/edit-note-form';
+import { MarkdownEditor } from '@/components/notes/markdown-editor';
 import { CancelEditDialog } from '@/components/notes/cancel-edit-dialog';
 import { useToast } from '@/components/ui/toast';
-import { getNoteAction } from '@/lib/actions/notes';
+import { getNoteAction, updateNoteAction } from '@/lib/actions/notes';
 import type { Note } from '@/lib/types/database';
 
 export default function EditNotePage() {
@@ -20,6 +21,10 @@ export default function EditNotePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [isMarkdownMode, setIsMarkdownMode] = useState(false);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
   const params = useParams();
   const { addToast } = useToast();
@@ -37,8 +42,10 @@ export default function EditNotePage() {
     try {
       const result = await getNoteAction(id);
       
-      if (result.success) {
+      if (result.success && result.data) {
         setNote(result.data);
+        setTitle(result.data.title);
+        setContent(result.data.content);
       } else {
         addToast({
           title: '오류',
@@ -67,9 +74,36 @@ export default function EditNotePage() {
     }
   };
 
-  const handleSave = () => {
-    // 저장 완료 후 상세 페이지로 이동
-    router.push(`/notes/${noteId}`);
+  const handleSave = async () => {
+    if (!note) return;
+    
+    setIsSaving(true);
+    try {
+      const result = await updateNoteAction(note.id, title, content);
+      if (result.success) {
+        addToast({
+          title: '저장 완료',
+          description: '노트가 성공적으로 저장되었습니다.',
+          variant: 'success',
+        });
+        // 저장 완료 후 상세 페이지로 이동
+        router.push(`/notes/${noteId}`);
+      } else {
+        addToast({
+          title: '저장 실패',
+          description: result.error || '노트 저장 중 오류가 발생했습니다.',
+          variant: 'destructive',
+        });
+      }
+    } catch {
+      addToast({
+        title: '저장 실패',
+        description: '예상치 못한 오류가 발생했습니다.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {
@@ -91,6 +125,14 @@ export default function EditNotePage() {
   const handleChanges = (hasChanges: boolean) => {
     setHasChanges(hasChanges);
   };
+
+  // 변경사항 감지
+  useEffect(() => {
+    if (note) {
+      const hasChanges = title !== note.title || content !== note.content;
+      setHasChanges(hasChanges);
+    }
+  }, [title, content, note]);
 
   if (isLoading) {
     return (
@@ -135,6 +177,13 @@ export default function EditNotePage() {
           </Button>
           <div className="flex gap-2">
             <Button 
+              onClick={() => setIsMarkdownMode(!isMarkdownMode)}
+              variant="outline"
+              className="border-purple-300 text-purple-700 hover:bg-purple-50"
+            >
+              {isMarkdownMode ? '일반 편집' : '마크다운 편집'}
+            </Button>
+            <Button 
               onClick={handleCancel}
               variant="outline"
               className="border-gray-300 text-gray-700 hover:bg-gray-50"
@@ -151,11 +200,23 @@ export default function EditNotePage() {
         </div>
       </div>
 
-      <EditNoteForm 
-        note={note} 
-        onSave={handleSave}
-        onChanges={handleChanges}
-      />
+      {isMarkdownMode ? (
+        <MarkdownEditor
+          title={title}
+          content={content}
+          onTitleChange={setTitle}
+          onContentChange={setContent}
+          onSave={handleSave}
+          isSaving={isSaving}
+          hasUnsavedChanges={hasChanges}
+        />
+      ) : (
+        <EditNoteForm 
+          note={note} 
+          onSave={handleSave}
+          onChanges={handleChanges}
+        />
+      )}
 
       <CancelEditDialog
         open={cancelDialogOpen}

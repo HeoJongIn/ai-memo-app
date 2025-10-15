@@ -122,12 +122,15 @@ export default function Home() {
               <p className="text-lg text-gray-700 mb-8">
                 안녕하세요, {user.email}님! 👋
               </p>
-              <div className="flex gap-4 justify-center">
+              <div className="flex gap-4 justify-center flex-wrap">
                 <Button asChild size="lg" className="bg-gradient-to-r from-emerald-500 to-violet-600 hover:from-emerald-600 hover:to-violet-700 text-white border-0 shadow-lg">
                   <Link href="/notes/create">메모 작성하기</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="border-cyan-300 text-cyan-700 hover:bg-cyan-50">
                   <Link href="/notes">내 노트 보기</Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="border-purple-300 text-purple-700 hover:bg-purple-50">
+                  <Link href="/api-test">API 테스트</Link>
                 </Button>
                 <Button variant="outline" size="lg" onClick={() => setLogoutDialogOpen(true)} className="border-cyan-300 text-cyan-700 hover:bg-cyan-50">
                   로그아웃

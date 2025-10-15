@@ -10,15 +10,21 @@ import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { NoteDetail } from '@/components/notes/note-detail';
+import { MarkdownRenderer } from '@/components/notes/markdown-renderer';
+import { NoteSummary } from '@/components/notes/note-summary';
+import { NoteTags } from '@/components/notes/note-tags';
 import { DeleteNoteDialog } from '@/components/notes/delete-note-dialog';
 import { useToast } from '@/components/ui/toast';
 import { getNoteAction } from '@/lib/actions/notes';
-import type { Note } from '@/lib/types/database';
+import { getSummaryAction } from '@/lib/actions/notes';
+import type { Note, Summary } from '@/lib/types/database';
 
 export default function NoteDetailPage() {
   const [note, setNote] = useState<Note | null>(null);
+  const [summary, setSummary] = useState<Summary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isMarkdownMode, setIsMarkdownMode] = useState(false);
   const router = useRouter();
   const params = useParams();
   const { addToast } = useToast();
@@ -34,25 +40,33 @@ export default function NoteDetailPage() {
   const loadNote = async (id: string) => {
     setIsLoading(true);
     try {
-      const result = await getNoteAction(id);
+      const [noteResult, summaryResult] = await Promise.all([
+        getNoteAction(id),
+        getSummaryAction(id)
+      ]);
       
-      if (result.success) {
-        setNote(result.data);
+      if (noteResult.success && noteResult.data) {
+        setNote(noteResult.data);
       } else {
         addToast({
           title: '오류',
-          description: result.error || '노트를 불러오는데 실패했습니다.',
+          description: noteResult.error || '노트를 불러오는데 실패했습니다.',
           variant: 'destructive',
         });
         
         // 에러에 따라 적절한 페이지로 리다이렉트
-        if (result.error?.includes('로그인이 필요')) {
+        if (noteResult.error?.includes('로그인이 필요')) {
           router.push('/auth/login');
-        } else if (result.error?.includes('not found') || result.error?.includes('찾을 수 없')) {
+        } else if (noteResult.error?.includes('not found') || noteResult.error?.includes('찾을 수 없')) {
           router.push('/notes');
         } else {
           router.push('/notes');
         }
+      }
+
+      // 요약 데이터 설정 (실패해도 계속 진행)
+      if (summaryResult.success && summaryResult.data) {
+        setSummary(summaryResult.data);
       }
     } catch {
       addToast({
@@ -128,6 +142,13 @@ export default function NoteDetailPage() {
           </Button>
           <div className="flex gap-2">
             <Button 
+              onClick={() => setIsMarkdownMode(!isMarkdownMode)}
+              variant="outline"
+              className="border-purple-300 text-purple-700 hover:bg-purple-50"
+            >
+              {isMarkdownMode ? '일반 보기' : '마크다운 보기'}
+            </Button>
+            <Button 
               onClick={handleEdit}
               variant="outline"
               className="border-blue-300 text-blue-700 hover:bg-blue-50"
@@ -145,7 +166,39 @@ export default function NoteDetailPage() {
         </div>
       </div>
 
-      <NoteDetail note={note} />
+      <NoteSummary 
+        noteId={note.id} 
+        existingSummary={summary}
+        onSummaryGenerated={(newSummary) => {
+          // 요약이 새로 생성되면 상태 업데이트
+          setSummary({
+            noteId: note.id,
+            model: 'gemini-2.0-flash-001',
+            content: newSummary,
+            createdAt: new Date()
+          });
+        }}
+      />
+
+      <NoteTags 
+        noteId={note.id}
+        onTagsGenerated={(tags) => {
+          // 태그가 새로 생성되면 콜백 실행 (필요시 상태 업데이트)
+          console.log('New tags generated:', tags);
+        }}
+      />
+
+      {isMarkdownMode ? (
+        <MarkdownRenderer
+          title={note.title}
+          content={note.content}
+          createdAt={note.createdAt}
+          updatedAt={note.updatedAt}
+          onEdit={handleEdit}
+        />
+      ) : (
+        <NoteDetail note={note} />
+      )}
 
       <DeleteNoteDialog
         open={deleteDialogOpen}
